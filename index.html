@@ -27,19 +27,12 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: var(--bg-color); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-    /* --- FALLBACK ERROR UI --- */
-    #fallback-ui { text-align: center; margin-top: 20vh; padding: 20px; }
-    #fallback-ui h2 { color: var(--danger); margin-bottom: 10px; font-weight: 800; font-size: 24px;}
-    #fallback-ui p { color: var(--text-muted); max-width: 500px; margin: 0 auto; line-height: 1.6; font-size: 15px;}
-
-    /* --- CONSUMER REDIRECT VIEW --- */
     #consumer-view { display: none; text-align: center; margin: 10vh auto; max-width: 420px; background: white; padding: 40px 24px; border-radius: 24px; box-shadow: var(--shadow-lg); }
     .consumer-logo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; display: none; border: 3px solid var(--surface-subtle); box-shadow: var(--shadow-md); }
     .pulse-ring { width: 72px; height: 72px; border-radius: 50%; background: rgba(37,99,235,0.1); margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; position: relative; }
     .pulse-ring::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid var(--primary); animation: pulse 1.5s linear infinite; opacity: 0; }
     @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.6; } 100% { transform: scale(1.3); opacity: 0; } }
 
-    /* --- ADMIN DASHBOARD --- */
     #admin-view { display: none; width: 100%; max-width: 1300px; margin: 0 auto; padding: 24px; }
     .header-card { background: var(--surface); border-radius: 20px; padding: 20px 28px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .brand-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
@@ -54,7 +47,6 @@
     .grid-2col { display: grid; grid-template-columns: 1fr; gap: 24px; }
     @media (min-width: 960px) { .grid-2col { grid-template-columns: 1fr 1fr; } }
 
-    /* Forms */
     .input-group { margin-bottom: 18px; }
     .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
     .input-group input, .input-group select { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; background: #fff; }
@@ -73,24 +65,19 @@
     .btn-dark { background: #0f172a; }
     .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
 
-    /* Camera Scanner */
     #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 2px solid var(--border); display: none; margin-bottom: 16px; }
 
-    /* Bulk Minting Grid */
     .bulk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-top: 20px; }
     .bulk-card { background: white; border: 1.5px dashed var(--border); border-radius: 16px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .bulk-id { font-family: monospace; font-weight: 700; font-size: 13px; }
 
-    /* Lists */
     .data-list { display: grid; gap: 12px; }
     .data-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--surface-subtle); border: 1px solid var(--border); border-radius: 14px; }
 
-    /* Standee Canvas */
     .standee-canvas { width: 100%; max-width: 320px; aspect-ratio: 4 / 6; background: white; border-radius: 16px; padding: 30px 20px; margin: 0 auto 20px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; }
     .standee-logo { max-height: 70px; max-width: 120px; object-fit: contain; margin-bottom: 10px; display: none; }
     #standee-qr-container img { margin: 0 auto; }
 
-    /* --- MOBILE DYNAMIC OVERRIDES --- */
     @media (max-width: 767px) {
       body { padding-bottom: 90px; }
       #admin-view { padding: 12px; }
@@ -110,14 +97,6 @@
 </head>
 <body>
 
-  <!-- 0. FALLBACK ERROR (Disappears automatically if JS loads properly) -->
-  <div id="fallback-ui">
-    <h2>⚠️ JavaScript Blocked</h2>
-    <p>You opened this file directly from your computer (file://). Browsers block Firebase when opened this way for security reasons.</p>
-    <p style="margin-top: 15px; font-weight: 600;">How to fix: Use "Live Server" in VS Code, or upload this to a web host.</p>
-  </div>
-
-  <!-- 1. CONSUMER REDIRECT -->
   <div id="consumer-view">
     <img id="c-logo" class="consumer-logo" src="" alt="Logo">
     <div class="pulse-ring" id="c-pulse"><i data-feather="external-link" style="color: var(--primary); width: 28px;"></i></div>
@@ -125,9 +104,7 @@
     <p style="color: var(--text-muted); font-size: 14px;" id="c-msg">Routing you to the review page...</p>
   </div>
 
-  <!-- 2. ADMIN DASHBOARD -->
   <div id="admin-view">
-    
     <div class="header-card">
       <div>
         <h1 class="brand-title">Feasibility Media</h1>
@@ -142,7 +119,6 @@
       <button class="tab-btn" onclick="switchTab('tab-preview')"><i data-feather="printer"></i> <span>Print</span></button>
     </div>
 
-    <!-- TAB 1: BIND STANDEE -->
     <div id="tab-bind" class="tab-pane active">
       <div class="grid-2col">
         <div class="card">
@@ -157,17 +133,14 @@
 
         <div class="card">
           <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">2. Assign to Client</h2>
-          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">You can assign unlimited QR codes to a single client profile.</p>
-          
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Assign unlimited QR codes to a client profile.</p>
           <div class="input-group">
             <label>Select Existing Client</label>
             <select id="b-client-select">
               <option value="" disabled selected>Loading clients...</option>
             </select>
           </div>
-          
           <button id="btn-bind-save" class="btn"><i data-feather="check-circle"></i> Activate & Bind to Client</button>
-          
           <div style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border); text-align: center;">
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">Client not in the list?</p>
             <button class="btn btn-outline" onclick="switchTab('tab-clients')">Create New Client Profile First</button>
@@ -176,28 +149,23 @@
       </div>
     </div>
 
-    <!-- TAB 2: CLIENT PROFILES -->
     <div id="tab-clients" class="tab-pane">
       <div class="grid-2col">
         <div class="card">
           <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">Create / Edit Client Profile</h2>
-          
           <div class="input-group">
             <label>Business Name</label>
             <input type="text" id="c-name" placeholder="e.g., Vidya Kendra Ranchi">
           </div>
-
           <div class="input-group">
             <label>Google Direct Review Link <span style="color:red;">*</span></label>
             <input type="url" id="c-link" placeholder="Paste link..." oninput="parseLink()">
             <span class="helper-text">Paste the "Ask for reviews" shortlink from your Google Business Profile (e.g., g.page/r/...) OR use the exact Place ID URL.</span>
           </div>
-
           <div class="input-group">
-            <label>Auto-Formatted URL (Checks for pop-up compatibility)</label>
+            <label>Auto-Formatted URL</label>
             <input type="text" id="c-direct-link" class="input-readonly" readonly placeholder="Auto-formats here...">
           </div>
-
           <div class="input-group">
             <label>Client Logo (Optional)</label>
             <div class="file-upload-btn">
@@ -206,10 +174,8 @@
             </div>
             <img id="logo-preview" src="">
           </div>
-
           <button id="btn-save-client" class="btn"><i data-feather="save"></i> Save Client Profile</button>
         </div>
-
         <div class="card">
           <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">Active Clients</h2>
           <div class="data-list" id="client-list-ui"></div>
@@ -217,7 +183,6 @@
       </div>
     </div>
 
-    <!-- TAB 3: BULK MINTING -->
     <div id="tab-bulk" class="tab-pane">
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
@@ -234,34 +199,28 @@
       </div>
     </div>
 
-    <!-- TAB 4: STANDEE PREVIEW -->
     <div id="tab-preview" class="tab-pane">
       <div class="card" style="text-align: center;">
         <h2 style="font-size: 16px; margin-bottom: 20px; font-weight:700;">Standee 4x6 Preview</h2>
-        
         <div class="standee-canvas">
           <div>
             <img id="p-logo" class="standee-logo" src="">
             <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" style="width: 100px; margin-bottom: 8px;" alt="Google">
             <h2 id="p-biz-name" style="font-size: 20px; font-weight: 800; line-height: 1.2;">Select a Tag from Database</h2>
           </div>
-          
           <div style="background: white; padding: 14px; border-radius: 14px; border: 1px solid var(--border); margin: 12px 0;">
             <div id="standee-qr-container"></div>
           </div>
-          
           <div>
             <div style="color: #FBBC04; font-size: 26px; letter-spacing: 2px;">★★★★★</div>
             <p style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 4px; text-transform: uppercase;">Scan to review us</p>
           </div>
         </div>
         <button onclick="window.print()" class="btn btn-dark" style="max-width: 320px;"><i data-feather="printer"></i> Print Standee Insert</button>
-        
         <h3 style="font-size: 16px; margin-top: 30px; margin-bottom: 16px; font-weight:700;">Assigned Standees</h3>
         <div class="data-list" id="assigned-qr-list"></div>
       </div>
     </div>
-
   </div>
 
   <script type="module">
@@ -269,13 +228,9 @@
     import { doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-    // 0. HIDE FALLBACK UI IF MODULE LOADS
-    document.getElementById('fallback-ui').style.display = 'none';
-
     feather.replace();
     let allClients = {}; 
 
-    // 1. ROUTER LOGIC
     const urlParams = new URLSearchParams(window.location.search);
     const qrId = urlParams.get('id');
 
@@ -295,7 +250,6 @@
       event.currentTarget.classList.add('active');
     };
 
-    // 2. CONSUMER REDIRECT LOGIC
     async function initConsumerRedirect(id) {
       try {
         const qrSnap = await getDoc(doc(db, "qrcodes", id));
@@ -307,12 +261,10 @@
             document.getElementById('c-pulse').style.display = 'none';
             return;
           }
-
           const clientSnap = await getDoc(doc(db, "clients", qrData.clientId));
           if(clientSnap.exists()) {
             const clientData = clientSnap.data();
             document.getElementById('c-biz-name').innerText = clientData.name;
-            
             if(clientData.logoUrl) {
               document.getElementById('c-logo').src = clientData.logoUrl;
               document.getElementById('c-logo').style.display = 'block';
@@ -328,7 +280,6 @@
       }
     }
 
-    // 3. CLIENT MANAGEMENT LOGIC
     window.previewLogo = (input) => {
       if (input.files && input.files[0]) {
         document.getElementById('c-file-name').innerText = input.files[0].name;
@@ -373,21 +324,13 @@
           await uploadBytes(storageRef, logoFile);
           logoUrl = await getDownloadURL(storageRef);
         }
-
-        await setDoc(doc(db, "clients", clientId), {
-          name: name,
-          directLink: directLink,
-          logoUrl: logoUrl,
-          createdAt: new Date()
-        });
-
+        await setDoc(doc(db, "clients", clientId), { name: name, directLink: directLink, logoUrl: logoUrl, createdAt: new Date() });
         alert("Client Created!");
         document.getElementById('c-name').value = '';
         document.getElementById('c-link').value = '';
         document.getElementById('c-direct-link').value = '';
         document.getElementById('c-file-name').innerText = 'Tap to select image';
         document.getElementById('logo-preview').style.display = 'none';
-        
         loadClients(); 
       } catch (e) {
         console.error(e);
@@ -402,7 +345,6 @@
     async function loadClients() {
       const uiList = document.getElementById('client-list-ui');
       const selectBox = document.getElementById('b-client-select');
-      
       try {
         const snap = await getDocs(collection(db, "clients"));
         uiList.innerHTML = '';
@@ -447,7 +389,6 @@
       }
     };
 
-    // 4. BINDING QR TO CLIENT
     document.getElementById('btn-bind-save').addEventListener('click', async () => {
       const qrId = document.getElementById('b-qr-id').value.trim();
       const clientId = document.getElementById('b-client-select').value;
@@ -477,7 +418,6 @@
       }
     });
 
-    // 5. BULK MINTING
     document.getElementById('btn-mint').addEventListener('click', async () => {
       const qty = parseInt(document.getElementById('bulk-qty').value) || 1;
       const printArea = document.getElementById('print-area');
@@ -498,17 +438,28 @@
           card.className = 'bulk-card';
           
           const qrDiv = document.createElement('div');
+          // Safely generate the QR directly into the new element
           new QRCode(qrDiv, { text: redirectUrl, width: 120, height: 120 });
 
+          const idDiv = document.createElement('div');
+          idDiv.className = 'bulk-id';
+          idDiv.innerText = newId;
+
+          const tagDiv = document.createElement('div');
+          tagDiv.className = 'bulk-tag';
+          tagDiv.innerText = 'Unassigned';
+
+          // Append everything individually to avoid using innerHTML +=
           card.appendChild(qrDiv);
-          card.innerHTML += `<div class="bulk-id">${newId}</div><div class="bulk-tag">Unassigned</div>`;
+          card.appendChild(idDiv);
+          card.appendChild(tagDiv);
+          
           printArea.appendChild(card);
         }
       } catch (e) { alert("Error minting."); }
       finally { btn.disabled = false; btn.innerHTML = '<i data-feather="cpu"></i> Mint'; feather.replace(); }
     });
 
-    // 6. CAMERA SCANNER
     let scanner = null;
     document.getElementById('btn-camera').addEventListener('click', () => {
       const reader = document.getElementById('reader');
@@ -522,7 +473,6 @@
       }, () => {}).catch(() => alert("Camera permission required."));
     });
 
-    // 7. LOAD & PREVIEW ASSIGNED QRS
     async function loadAssignedQRs() {
       const list = document.getElementById('assigned-qr-list');
       try {
@@ -549,21 +499,24 @@
     }
 
     window.renderPreview = (qrId, clientId) => {
-      const client = allClients[clientId];
-      document.getElementById('p-biz-name').innerText = client.name;
+      switchTab('tab-preview'); // Important: Switch tab before generating the QR code so the container is visible
       
-      const logoEl = document.getElementById('p-logo');
-      if(client.logoUrl) { logoEl.src = client.logoUrl; logoEl.style.display = 'block'; } 
-      else { logoEl.style.display = 'none'; }
+      setTimeout(() => {
+        const client = allClients[clientId];
+        document.getElementById('p-biz-name').innerText = client.name;
+        
+        const logoEl = document.getElementById('p-logo');
+        if(client.logoUrl) { logoEl.src = client.logoUrl; logoEl.style.display = 'block'; } 
+        else { logoEl.style.display = 'none'; }
 
-      const qrContainer = document.getElementById('standee-qr-container');
-      qrContainer.innerHTML = '';
-      new QRCode(qrContainer, {
-        text: `${window.location.origin}${window.location.pathname}?id=${qrId}`,
-        width: 140, height: 140, colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
-      });
-      
-      switchTab('tab-preview');
+        const qrContainer = document.getElementById('standee-qr-container');
+        qrContainer.innerHTML = ''; // Safely clear only this container
+        
+        new QRCode(qrContainer, {
+          text: `${window.location.origin}${window.location.pathname}?id=${qrId}`,
+          width: 140, height: 140, colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+        });
+      }, 50); // Minor delay ensures CSS display: block has taken effect
     };
   </script>
 </body>
