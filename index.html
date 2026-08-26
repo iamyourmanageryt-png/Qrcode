@@ -3,32 +3,345 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leave a Review</title>
-  <link rel="stylesheet" href="style.css">
+  <title>DesignSnap Reviews</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    /* --- STUNNING GLOBAL UI --- */
+    :root {
+      --primary: #4285F4; /* Google Blue */
+      --primary-hover: #3367d6;
+      --bg-gradient: linear-gradient(135deg, #f6f8fd 0%, #f1f5f9 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --google-yellow: #FBBC05;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+    body { background: var(--bg-gradient); color: var(--text-dark); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+
+    .container { width: 100%; max-width: 500px; padding: 20px; position: relative; }
+
+    /* Glassmorphism Card */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    /* --- CONSUMER VIEW UI --- */
+    #consumer-view { display: none; text-align: center; }
+    .biz-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 3px solid white; display: none; margin-left: auto; margin-right: auto;}
+    .title-area h1 { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+    .title-area p { color: var(--text-light); font-size: 14px; margin-bottom: 25px; }
+    
+    .review-option {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      padding: 18px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .review-option:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(66, 133, 244, 0.1); }
+    .review-option:active { transform: scale(0.98); }
+    .review-option::after { content: 'Tap to copy'; position: absolute; right: 15px; bottom: 15px; font-size: 11px; color: var(--primary); font-weight: 600; opacity: 0; transition: opacity 0.2s; }
+    .review-option:hover::after { opacity: 1; }
+
+    /* --- SALES/ADMIN VIEW UI --- */
+    #admin-view { display: none; }
+    .admin-header { text-align: center; margin-bottom: 25px; }
+    .input-group { margin-bottom: 18px; }
+    .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-light); }
+    .input-group input { width: 100%; padding: 12px 15px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: border 0.2s; outline: none; }
+    .input-group input:focus { border-color: var(--primary); }
+    
+    .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #10b981; margin-top: 10px; }
+
+    /* --- PRINTABLE STICKER UI --- */
+    #sticker-preview-container { display: none; margin-top: 30px; text-align: center; border-top: 2px dashed #e2e8f0; padding-top: 20px;}
+    
+    .printable-sticker {
+      background: white;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      text-align: center;
+      position: relative;
+      border: 1px solid #eee;
+    }
+    .sticker-google-logo { width: 120px; margin-bottom: 10px; }
+    .sticker-stars { color: var(--google-yellow); font-size: 28px; letter-spacing: 2px; margin-bottom: 5px; line-height: 1;}
+    .sticker-title { font-size: 20px; font-weight: 700; color: #000; margin-bottom: 20px; }
+    .sticker-qr-wrapper { background: white; padding: 10px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 15px; }
+    .sticker-footer { font-size: 14px; font-weight: 600; color: var(--primary); }
+
+    /* Toast Animation */
+    .toast { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 1000; }
+    .toast.active { opacity: 1; pointer-events: all; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-top: 20px;}
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* --- PRINT MEDIA QUERY --- */
+    @media print {
+      body * { visibility: hidden; background: white; }
+      .container { padding: 0; max-width: none; }
+      .glass-card { box-shadow: none; border: none; }
+      .printable-sticker, .printable-sticker * { visibility: visible; }
+      .printable-sticker {
+        position: absolute; left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px; /* Slightly larger for physical print */
+        box-shadow: none; border: none;
+      }
+      .sticker-qr-wrapper { box-shadow: none; border: 2px solid #eee; }
+    }
+  </style>
 </head>
 <body>
-  <div class="app-container">
-    <div id="loading-state" class="header-text">Loading business info...</div>
-    
-    <div id="content-state" style="display: none;">
-      <div class="header-text">
-        <h1 id="business-name">Business Name</h1>
-        <p class="text-light">Tap a review below to copy and post it instantly to Google.</p>
-      </div>
 
-      <div id="templates-container">
-        <!-- Review templates generated by JS -->
+  <div class="container">
+    
+    <!-- 1. CONSUMER VIEW -->
+    <div id="consumer-view" class="glass-card">
+      <img id="c-logo" class="biz-logo" src="" alt="Business Logo">
+      <div class="title-area">
+        <h1 id="c-biz-name">Loading...</h1>
+        <p>Choose a review below. We'll copy it for you so you can paste it on Google instantly.</p>
+      </div>
+      <div id="c-templates">
+        <!-- JS injects reviews here -->
       </div>
     </div>
+
+    <!-- 2. SALES / ADMIN VIEW -->
+    <div id="admin-view" class="glass-card">
+      <div class="admin-header">
+        <h1>DesignSnap Portal</h1>
+        <p style="color: var(--text-light); font-size: 14px;">Bind QR & Generate Print Sticker</p>
+      </div>
+
+      <div class="input-group">
+        <label>QR Code ID (e.g., CAFE01)</label>
+        <input type="text" id="a-qr-id" placeholder="Create a unique ID">
+      </div>
+      <div class="input-group">
+        <label>Business Name</label>
+        <input type="text" id="a-biz-name" placeholder="e.g., Cafe Mocha">
+      </div>
+      <div class="input-group">
+        <label>Business Logo URL (Optional)</label>
+        <input type="text" id="a-logo-url" placeholder="https://image-url.com/logo.png">
+      </div>
+      <div class="input-group">
+        <label>Google Maps / Review Link</label>
+        <input type="text" id="a-google-link" placeholder="Paste full Google URL here...">
+      </div>
+
+      <button id="btn-bind" class="btn">Bind & Generate Sticker</button>
+      <div id="a-status" style="text-align: center; margin-top: 10px; font-size: 14px; font-weight: 600;"></div>
+
+      <!-- Sticker Preview Area -->
+      <div id="sticker-preview-container">
+        <h3 style="font-size: 16px; margin-bottom: 15px; color: var(--text-light);">Printable Standee Generated</h3>
+        
+        <div class="printable-sticker">
+          <!-- Google Logo SVG -->
+          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="sticker-google-logo" alt="Google">
+          <div class="sticker-stars">★★★★★</div>
+          <div class="sticker-title" id="sticker-biz-name">Business Name</div>
+          
+          <div class="sticker-qr-wrapper">
+            <div id="sticker-qr-code"></div>
+          </div>
+          
+          <div class="sticker-footer">Scan to review us</div>
+        </div>
+
+        <button id="btn-print" class="btn btn-secondary">🖨️ Print Sticker Now</button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Invisible Copy Toast -->
-  <div id="success-toast" class="toast-overlay">
-    <h2>Review Copied! 📋</h2>
-    <p>Paste it on the next screen.</p>
+  <!-- Fullscreen Toast for Copy Action -->
+  <div id="copy-toast" class="toast">
+    <h2 style="color: var(--primary); font-size: 28px; margin-bottom: 10px;">Review Copied! 📋</h2>
+    <p style="font-size: 16px; color: var(--text-light);">Redirecting to Google... just hit 'Paste'.</p>
     <div class="spinner"></div>
   </div>
 
-  <script type="module" src="consumer.js"></script>
+  <!-- --- APPLICATION LOGIC --- -->
+  <script type="module">
+    import { db } from "./firebase-config.js";
+    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // AI Review Templates
+    const reviewTemplates = [
+      "Absolutely amazing experience. The staff was incredibly friendly and the service was top-notch. Highly recommend!",
+      "Great atmosphere and excellent quality. Everything exceeded my expectations. Will definitely be coming back.",
+      "Five stars! Quick service, very clean space, and exactly what I was looking for today."
+    ];
+
+    // ROUTER: Check if URL has ?id=
+    const urlParams = new URLSearchParams(window.location.search);
+    const qrId = urlParams.get('id');
+
+    if (qrId) {
+      // Show Consumer View
+      document.getElementById('consumer-view').style.display = 'block';
+      initConsumerView(qrId);
+    } else {
+      // Show Admin View
+      document.getElementById('admin-view').style.display = 'block';
+      initAdminView();
+    }
+
+    /* ----------------------------------------------------
+       CONSUMER VIEW LOGIC
+    ---------------------------------------------------- */
+    async function initConsumerView(id) {
+      const bizNameEl = document.getElementById('c-biz-name');
+      const logoEl = document.getElementById('c-logo');
+      const templatesContainer = document.getElementById('c-templates');
+
+      try {
+        const docRef = doc(db, "qrcodes", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          
+          bizNameEl.innerText = data.businessName;
+          
+          // Show logo if exists
+          if (data.logoUrl) {
+            logoEl.src = data.logoUrl;
+            logoEl.style.display = "block";
+          }
+
+          // Render Options
+          reviewTemplates.forEach(text => {
+            const card = document.createElement('div');
+            card.className = 'review-option';
+            card.innerText = text;
+            card.addEventListener('click', () => handleReviewTap(text, data.googleLink));
+            templatesContainer.appendChild(card);
+          });
+        } else {
+          bizNameEl.innerText = "Error: Code not found.";
+        }
+      } catch (err) {
+        bizNameEl.innerText = "Network Error.";
+        console.error(err);
+      }
+    }
+
+    async function handleReviewTap(text, googleLink) {
+      try {
+        await navigator.clipboard.writeText(text);
+        
+        const toast = document.getElementById('copy-toast');
+        toast.classList.add('active');
+
+        // Redirect after delay to allow reading the toast
+        setTimeout(() => {
+          window.location.href = googleLink;
+        }, 1800);
+      } catch (err) {
+        alert("Clipboard permission denied. Please copy manually.");
+      }
+    }
+
+    /* ----------------------------------------------------
+       SALES / ADMIN VIEW LOGIC
+    ---------------------------------------------------- */
+    function initAdminView() {
+      const btnBind = document.getElementById('btn-bind');
+      const btnPrint = document.getElementById('btn-print');
+      
+      btnBind.addEventListener('click', async () => {
+        const id = document.getElementById('a-qr-id').value.trim();
+        const bizName = document.getElementById('a-biz-name').value.trim();
+        const logoUrl = document.getElementById('a-logo-url').value.trim();
+        const link = document.getElementById('a-google-link').value.trim();
+        const status = document.getElementById('a-status');
+
+        if (!id || !bizName || !link) {
+          status.innerText = "Please fill ID, Name, and Link.";
+          status.style.color = "red";
+          return;
+        }
+
+        try {
+          status.innerText = "Saving to database...";
+          status.style.color = "black";
+
+          // Save to Firestore
+          const docRef = doc(db, "qrcodes", id);
+          await setDoc(docRef, {
+            status: "active",
+            businessName: bizName,
+            logoUrl: logoUrl,
+            googleLink: link,
+            updatedAt: new Date()
+          }, { merge: true });
+
+          status.innerText = "✅ Bound Successfully!";
+          status.style.color = "#10b981";
+
+          // Generate Sticker
+          generateSticker(id, bizName);
+
+        } catch (err) {
+          console.error(err);
+          status.innerText = "❌ Database Error.";
+          status.style.color = "red";
+        }
+      });
+
+      btnPrint.addEventListener('click', () => {
+        window.print();
+      });
+    }
+
+    function generateSticker(qrId, bizName) {
+      // Construct the URL this QR code will point to
+      // For local testing, it uses your current URL + ?id=
+      const redirectUrl = window.location.origin + window.location.pathname + "?id=" + qrId;
+
+      document.getElementById('sticker-biz-name').innerText = bizName;
+      
+      const qrContainer = document.getElementById('sticker-qr-code');
+      qrContainer.innerHTML = ""; // Clear previous
+
+      new QRCode(qrContainer, {
+        text: redirectUrl,
+        width: 150,
+        height: 150,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+      document.getElementById('sticker-preview-container').style.display = 'block';
+    }
+  </script>
 </body>
 </html>
