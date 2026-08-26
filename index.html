@@ -3,198 +3,221 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Feasibility Media - QR Routing</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Feasibility Media - Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- Feather Icons for sleek UI elements -->
   <script src="https://unpkg.com/feather-icons"></script>
 
   <style>
-    /* --- HIGH-END GLOBAL UI --- */
+    /* --- GLOBAL UI --- */
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
-      --surface: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --success: #10b981;
-      --error: #ef4444;
-      --google-yellow: #fbbc04;
-      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --primary: #2563eb; --primary-dark: #1d4ed8;
+      --bg-color: #f1f5f9; --surface: #ffffff;
+      --text-main: #0f172a; --text-muted: #64748b;
+      --border: #e2e8f0; --danger: #ef4444;
+      --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+    body { background: var(--bg-color); color: var(--text-main); min-height: 100vh; padding: 20px; display: flex; justify-content: center; }
 
-    .app-container { width: 100%; max-width: 540px; position: relative; }
-
-    .card { background: var(--surface); border-radius: 24px; padding: 40px 32px; box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.8); }
-
-    /* --- CONSUMER REDIRECT UX --- */
-    #consumer-view { display: none; text-align: center; }
-    .pulse-ring {
-      width: 80px; height: 80px; border-radius: 50%; background: rgba(37, 99, 235, 0.1); margin: 0 auto 24px auto;
-      display: flex; justify-content: center; align-items: center; position: relative;
-    }
-    .pulse-ring::before {
-      content: ''; position: absolute; left: -10px; top: -10px; right: -10px; bottom: -10px;
-      border-radius: 50%; border: 2px solid var(--primary); animation: pulse 1.5s linear infinite; opacity: 0;
-    }
+    /* --- CONSUMER REDIRECT --- */
+    #consumer-view { display: none; text-align: center; margin: auto; max-width: 400px; background: white; padding: 40px; border-radius: 24px; box-shadow: var(--shadow-md); }
+    .pulse-ring { width: 80px; height: 80px; border-radius: 50%; background: rgba(37,99,235,0.1); margin: 0 auto 24px; display: flex; justify-content: center; align-items: center; position: relative; }
+    .pulse-ring::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 2px solid var(--primary); animation: pulse 1.5s linear infinite; opacity: 0; }
     @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.3); opacity: 0; } }
-    .consumer-title { font-size: 24px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
-    .consumer-subtitle { color: var(--text-muted); font-size: 16px; }
 
-    /* --- SALES / ADMIN UI --- */
-    #admin-view { display: none; }
-    .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-    .admin-header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
-    .badge { background: #eff6ff; color: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    /* --- ADMIN DASHBOARD --- */
+    .admin-container { display: none; width: 100%; max-width: 800px; margin: 20px auto; }
+    .card { background: var(--surface); border-radius: 20px; padding: 32px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
+    
+    .nav-tabs { display: flex; gap: 12px; margin-bottom: 24px; }
+    .tab-btn { flex: 1; padding: 14px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; color: var(--text-muted); }
+    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
+    /* Form Styles */
     .input-group { margin-bottom: 20px; }
     .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
-    .input-group input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 15px; background: #f8fafc; transition: all 0.2s; outline: none; }
-    .input-group input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+    .input-group input { width: 100%; padding: 14px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: 0.2s; }
+    .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
     
-    .btn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; width: 100%; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
-    .btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
-    .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); margin-top: 12px; }
-    .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; width: 100%; }
+    .btn:hover { background: var(--primary-dark); }
+    .btn-danger { background: white; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: #fef2f2; }
 
-    /* Recent Binds Section */
-    .recent-section { margin-top: 32px; }
-    .recent-title { font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; }
-    .recent-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-    .recent-item { background: #f8fafc; padding: 12px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; border: 1px solid var(--border); }
-    .recent-name { font-weight: 600; }
-    .recent-id { color: var(--text-muted); font-family: monospace; }
+    /* Dashboard List */
+    .client-list { display: grid; gap: 16px; }
+    .client-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; }
+    .client-info h3 { font-size: 16px; margin-bottom: 4px; }
+    .client-info p { font-size: 13px; color: var(--text-muted); font-family: monospace; }
+    .client-actions { display: flex; gap: 8px; }
+    .icon-btn { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; color: var(--text-main); transition: 0.2s; }
+    .icon-btn:hover { background: #f1f5f9; }
+    .icon-btn.del:hover { color: var(--danger); border-color: var(--danger); background: #fef2f2; }
 
-    /* Toast Notification */
-    .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 16px 24px; border-radius: 100px; font-weight: 500; font-size: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; display: flex; align-items: center; gap: 8px; }
-    .toast.show { bottom: 40px; }
-
-    /* --- PREMIUM PRINTABLE STICKER UI --- */
-    #sticker-preview-container { display: none; margin-top: 40px; text-align: center; }
+    /* --- PREMIUM DESIGNER STICKER (4x6 Aspect Ratio) --- */
+    #sticker-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
     
-    .printable-sticker {
-      background: white; width: 100%; max-width: 320px; margin: 0 auto; padding: 40px 24px; border-radius: 16px;
-      box-shadow: var(--shadow-lg); text-align: center; position: relative; border: 1px solid var(--border);
+    .standee-canvas {
+      background: white;
+      width: 4in; height: 6in; /* Standard Acrylic Standee Size */
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      padding: 40px 30px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
     }
-    .sticker-google-logo { width: 140px; margin-bottom: 16px; }
-    .sticker-stars { color: var(--google-yellow); font-size: 32px; letter-spacing: 4px; margin-bottom: 8px; line-height: 1;}
-    .sticker-title { font-size: 22px; font-weight: 800; color: #000; margin-bottom: 24px; line-height: 1.2; }
-    .sticker-qr-wrapper { background: white; padding: 12px; border-radius: 12px; display: inline-block; box-shadow: 0 8px 16px rgba(0,0,0,0.08); margin-bottom: 20px; border: 1px solid #f1f5f9; }
-    .sticker-footer { font-size: 15px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
+    
+    /* Google Brand Top Bar */
+    .standee-canvas::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 8px;
+      background: linear-gradient(90deg, #4285F4 25%, #EA4335 25% 50%, #FBBC04 50% 75%, #34A853 75%);
+    }
 
-    /* --- PRINT MEDIA QUERY (For 4x6 Acrylic Standees) --- */
+    /* Inner Styling */
+    .standee-header { text-align: center; width: 100%; }
+    .standee-google-logo { width: 130px; margin-bottom: 20px; }
+    .standee-biz-name { font-size: 22px; font-weight: 800; color: #1e293b; text-align: center; line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 15px;}
+    
+    .standee-qr-box { 
+      background: white; 
+      padding: 16px; 
+      border-radius: 20px; 
+      border: 2px solid #f1f5f9;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06); 
+      margin: 10px 0;
+      position: relative;
+    }
+    .standee-qr-box::after {
+      content: 'SCAN ME';
+      position: absolute;
+      bottom: -12px; left: 50%; transform: translateX(-50%);
+      background: #4285F4; color: white;
+      font-size: 11px; font-weight: 800; letter-spacing: 1px;
+      padding: 4px 12px; border-radius: 20px;
+      border: 2px solid white;
+    }
+
+    .standee-footer { text-align: center; margin-top: 15px; }
+    .standee-stars { color: #FBBC04; font-size: 34px; letter-spacing: 2px; line-height: 1; margin-bottom: 8px;}
+    .standee-cta { font-size: 14px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; }
+
+    /* Overlay Controls */
+    .overlay-controls { display: flex; gap: 16px; margin-top: 24px; }
+    .overlay-controls .btn { width: auto; padding: 14px 24px; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
+
+    /* --- PRINT MEDIA QUERY --- */
     @media print {
       body * { visibility: hidden; background: white; }
       body { margin: 0; padding: 0; display: block; }
-      .app-container { max-width: none; }
-      .card, #btn-bind, .admin-header, .input-group, .recent-section { display: none !important; }
+      #sticker-overlay { position: absolute; inset: 0; background: white; display: flex !important; align-items: flex-start; padding: 0; }
+      .overlay-controls { display: none !important; }
       
-      #sticker-preview-container, .printable-sticker, .printable-sticker * { visibility: visible; }
-      #sticker-preview-container { position: absolute; left: 0; top: 0; width: 100%; margin: 0; border: none; }
-      
-      .printable-sticker {
-        position: absolute; left: 50%; top: 50%; transform: translate(-50%, 50%);
-        width: 4in; height: 6in; /* Standard standee insert size */
-        box-shadow: none; border: 1px dashed #ccc; /* Cut guide */
-        display: flex; flex-direction: column; justify-content: center; align-items: center;
+      /* Print exactly at 4x6 inches with cut guidelines */
+      .standee-canvas {
+        visibility: visible;
+        box-shadow: none;
+        border: 1px dashed #cbd5e1; /* Cutting guide */
+        border-radius: 0; /* Sharp corners for cutting */
+        margin: 0.5in auto;
       }
-      .sticker-qr-wrapper { box-shadow: none; border: 2px solid #000; }
+      .standee-canvas * { visibility: visible; }
     }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
+  <!-- 1. CONSUMER REDIRECT -->
+  <div id="consumer-view">
+    <div class="pulse-ring"><i data-feather="smartphone" style="color: var(--primary); width: 32px;"></i></div>
+    <h1 style="font-size: 22px; font-weight:700; margin-bottom: 8px;" id="c-biz-name">Authenticating...</h1>
+    <p style="color: var(--text-muted);">Connecting securely to Google Reviews.</p>
+  </div>
+
+  <!-- 2. ADMIN DASHBOARD -->
+  <div id="admin-view" class="admin-container">
     
-    <!-- 1. CONSUMER REDIRECT VIEW -->
-    <div id="consumer-view" class="card">
-      <div class="pulse-ring">
-        <i data-feather="smartphone" style="color: var(--primary); width: 32px; height: 32px;"></i>
+    <div class="card" style="padding: 24px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1 style="font-size: 22px; font-weight: 800;">Feasibility Media Hub</h1>
+        <p style="color: var(--text-muted); font-size: 14px;">Review Platform Manager</p>
       </div>
-      <h1 class="consumer-title" id="c-biz-name">Authenticating...</h1>
-      <p class="consumer-subtitle">Taking you to Google Reviews securely.</p>
+      <i data-feather="grid" style="color: var(--primary); width: 28px; height: 28px;"></i>
     </div>
 
-    <!-- 2. SALES / ADMIN VIEW -->
-    <div id="admin-view" class="card">
-      <div class="admin-header">
-        <div>
-          <h1>Feasibility Media</h1>
-          <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">Platform Setup Portal</p>
-        </div>
-        <span class="badge">Sales Team</span>
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tab-manage">Manage Tags</button>
+      <button class="tab-btn" id="tab-bind">Bind New Tag</button>
+    </div>
+
+    <!-- View: Manage -->
+    <div id="view-manage" class="card">
+      <h2 style="font-size: 18px; margin-bottom: 20px;">Active QR Codes</h2>
+      <div class="client-list" id="client-list">
+        <p style="text-align:center; color:var(--text-muted); padding: 20px;">Loading data...</p>
+      </div>
+    </div>
+
+    <!-- View: Bind / Edit Form -->
+    <div id="view-bind" class="card" style="display: none;">
+      <h2 style="font-size: 18px; margin-bottom: 20px;" id="form-title">Bind New QR Tag</h2>
+      
+      <div class="input-group">
+        <label>QR Tag ID (Unique Identifier)</label>
+        <input type="text" id="f-qr-id" placeholder="e.g., VK-001">
+      </div>
+      <div class="input-group">
+        <label>Client / Business Name</label>
+        <input type="text" id="f-biz-name" placeholder="e.g., Vidya Kendra">
+      </div>
+      <div class="input-group">
+        <label>Google Direct Review Link</label>
+        <input type="url" id="f-google-link" placeholder="Paste the exact Google Review link...">
       </div>
 
-      <div id="form-section">
-        <div class="input-group">
-          <label>QR Tag ID</label>
-          <input type="text" id="a-qr-id" placeholder="e.g., VK-001 or CAFE-04">
-        </div>
-        <div class="input-group">
-          <label>Client Name</label>
-          <input type="text" id="a-biz-name" placeholder="e.g., Vidya Kendra">
-        </div>
-        <div class="input-group">
-          <label>Google Direct Link</label>
-          <input type="url" id="a-google-link" placeholder="Paste the exact Google Review link...">
-        </div>
-
-        <button id="btn-bind" class="btn">
-          <i data-feather="link"></i> Bind & Generate Standee
-        </button>
-      </div>
-
-      <!-- Sticker Preview Area -->
-      <div id="sticker-preview-container">
-        <div class="printable-sticker">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="sticker-google-logo" alt="Google">
-          <div class="sticker-stars">★★★★★</div>
-          <div class="sticker-title" id="sticker-biz-name">Client Name</div>
-          <div class="sticker-qr-wrapper">
-            <div id="sticker-qr-code"></div>
-          </div>
-          <div class="sticker-footer">Scan to review us</div>
-        </div>
-
-        <button id="btn-print" class="btn" style="margin-top: 24px; background: #0f172a;">
-          <i data-feather="printer"></i> Print Standee Insert
-        </button>
-        <button id="btn-new" class="btn btn-outline">
-          <i data-feather="plus"></i> Bind Another Tag
-        </button>
-      </div>
-
-      <!-- Recent Binds (Local Storage) -->
-      <div class="recent-section" id="recent-section">
-        <div class="recent-title">Recent Activations (Local)</div>
-        <ul class="recent-list" id="recent-list">
-          <!-- Populated by JS -->
-        </ul>
-      </div>
+      <button id="btn-save" class="btn"><i data-feather="save"></i> Save Configuration</button>
     </div>
 
   </div>
 
-  <!-- Global Toast -->
-  <div id="toast" class="toast">
-    <i data-feather="check-circle" id="toast-icon"></i>
-    <span id="toast-msg">Success</span>
+  <!-- 3. PREMIUM DESIGNER PRINT OVERLAY -->
+  <div id="sticker-overlay">
+    <!-- The 4x6 Standee Canvas -->
+    <div class="standee-canvas">
+      <div class="standee-header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="standee-google-logo" alt="Google">
+        <h1 class="standee-biz-name" id="s-biz-name">Client Name</h1>
+      </div>
+      
+      <div class="standee-qr-box">
+        <div id="s-qr-code"></div>
+      </div>
+      
+      <div class="standee-footer">
+        <div class="standee-stars">★★★★★</div>
+        <div class="standee-cta">Review us today</div>
+      </div>
+    </div>
+
+    <div class="overlay-controls">
+      <button class="btn" style="background: white; color: black;" onclick="closeSticker()">
+        <i data-feather="x"></i> Close
+      </button>
+      <button class="btn" onclick="window.print()">
+        <i data-feather="printer"></i> Print Standee (4x6")
+      </button>
+    </div>
   </div>
 
   <script type="module">
     import { db } from "./firebase-config.js";
-    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Initialize Icons
     feather.replace();
 
-    // Router Logic
+    // ROUTER
     const urlParams = new URLSearchParams(window.location.search);
     const qrId = urlParams.get('id');
 
@@ -206,127 +229,187 @@
       initAdminView();
     }
 
-    /* --- CONSUMER REDIRECT --- */
+    /* =========================================
+       1. CONSUMER REDIRECT
+    ========================================= */
     async function initConsumerRedirect(id) {
-      const bizNameEl = document.getElementById('c-biz-name');
       try {
-        const docRef = doc(db, "qrcodes", id);
-        const docSnap = await getDoc(docRef);
-
+        const docSnap = await getDoc(doc(db, "qrcodes", id));
         if (docSnap.exists()) {
           const data = docSnap.data();
-          bizNameEl.innerText = data.businessName;
-          setTimeout(() => { window.location.replace(data.googleLink); }, 1200); // 1.2s delay for UX trust
+          document.getElementById('c-biz-name').innerText = data.businessName;
+          setTimeout(() => { window.location.replace(data.googleLink); }, 1000);
         } else {
-          bizNameEl.innerText = "Tag Inactive";
-          document.querySelector('.consumer-subtitle').innerText = "This QR code has not been assigned to a client yet.";
+          document.getElementById('c-biz-name').innerText = "Inactive Tag";
         }
       } catch (err) {
-        bizNameEl.innerText = "Connection Error";
-        document.querySelector('.consumer-subtitle').innerText = "Please check your network and scan again.";
+        document.getElementById('c-biz-name').innerText = "Network Error";
       }
     }
 
-    /* --- ADMIN / SALES VIEW --- */
+    /* =========================================
+       2. ADMIN DASHBOARD LOGIC
+    ========================================= */
     function initAdminView() {
-      const btnBind = document.getElementById('btn-bind');
-      const btnPrint = document.getElementById('btn-print');
-      const btnNew = document.getElementById('btn-new');
+      // Tab Switching
+      document.getElementById('tab-manage').addEventListener('click', () => switchTab('manage'));
+      document.getElementById('tab-bind').addEventListener('click', () => {
+        resetForm();
+        switchTab('bind');
+      });
+
+      // Save Button
+      document.getElementById('btn-save').addEventListener('click', saveTag);
+
+      // Initial Load
+      fetchAndRenderTags();
+    }
+
+    function switchTab(tab) {
+      document.getElementById('tab-manage').classList.toggle('active', tab === 'manage');
+      document.getElementById('tab-bind').classList.toggle('active', tab === 'bind');
+      document.getElementById('view-manage').style.display = tab === 'manage' ? 'block' : 'none';
+      document.getElementById('view-bind').style.display = tab === 'bind' ? 'block' : 'none';
       
-      renderRecentBinds();
+      if(tab === 'manage') fetchAndRenderTags();
+    }
 
-      btnBind.addEventListener('click', async () => {
-        const id = document.getElementById('a-qr-id').value.trim();
-        const bizName = document.getElementById('a-biz-name').value.trim();
-        const link = document.getElementById('a-google-link').value.trim();
+    function resetForm() {
+      document.getElementById('form-title').innerText = "Bind New QR Tag";
+      document.getElementById('f-qr-id').value = '';
+      document.getElementById('f-qr-id').disabled = false; // Allow editing ID on new
+      document.getElementById('f-biz-name').value = '';
+      document.getElementById('f-google-link').value = '';
+    }
 
-        if (!id || !bizName || !link) {
-          showToast("Please fill out all client fields.", "error");
+    // --- CRUD OPERATIONS ---
+
+    async function fetchAndRenderTags() {
+      const listEl = document.getElementById('client-list');
+      listEl.innerHTML = '<div style="text-align:center; padding: 20px;"><div class="spinner"></div>Loading...</div>';
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "qrcodes"));
+        listEl.innerHTML = ''; // Clear
+
+        if (querySnapshot.empty) {
+          listEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:20px;">No QR tags bound yet.</p>';
           return;
         }
 
-        btnBind.innerHTML = '<div class="spinner" style="width:20px;height:20px;border:3px solid #fff;border-top:3px solid transparent;border-radius:50%;animation:spin 1s linear infinite;"></div> Binding...';
-
-        try {
-          const docRef = doc(db, "qrcodes", id);
-          await setDoc(docRef, { status: "active", businessName: bizName, googleLink: link, updatedAt: new Date() }, { merge: true });
-
-          saveToLocalHistory(id, bizName);
-          showToast(`Successfully bound to ${bizName}`, "success");
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const id = doc.id;
           
-          document.getElementById('form-section').style.display = 'none';
-          document.getElementById('recent-section').style.display = 'none';
-          generateSticker(id, bizName);
+          // Create List Item
+          const item = document.createElement('div');
+          item.className = 'client-item';
+          item.innerHTML = `
+            <div class="client-info">
+              <h3>${data.businessName}</h3>
+              <p>ID: ${id}</p>
+            </div>
+            <div class="client-actions">
+              <button class="icon-btn" onclick="window.editTag('${id}', '${data.businessName}', '${data.googleLink}')" title="Edit">
+                <i data-feather="edit-2"></i>
+              </button>
+              <button class="icon-btn" onclick="window.showSticker('${id}', '${data.businessName}')" title="View/Print Sticker">
+                <i data-feather="printer"></i>
+              </button>
+              <button class="icon-btn del" onclick="window.deleteTag('${id}', '${data.businessName}')" title="Delete">
+                <i data-feather="trash-2"></i>
+              </button>
+            </div>
+          `;
+          listEl.appendChild(item);
+        });
+        feather.replace();
 
-        } catch (err) {
-          showToast("Database error. Check console.", "error");
-        } finally {
-          btnBind.innerHTML = '<i data-feather="link"></i> Bind & Generate Standee';
-          feather.replace();
-        }
-      });
-
-      btnPrint.addEventListener('click', () => window.print());
-
-      btnNew.addEventListener('click', () => {
-        document.getElementById('a-qr-id').value = '';
-        document.getElementById('a-biz-name').value = '';
-        document.getElementById('a-google-link').value = '';
-        document.getElementById('sticker-preview-container').style.display = 'none';
-        document.getElementById('form-section').style.display = 'block';
-        document.getElementById('recent-section').style.display = 'block';
-        renderRecentBinds();
-      });
-    }
-
-    /* --- HELPER FUNCTIONS --- */
-    function generateSticker(qrId, bizName) {
-      const redirectUrl = window.location.origin + window.location.pathname + "?id=" + qrId;
-      document.getElementById('sticker-biz-name').innerText = bizName;
-      
-      const qrContainer = document.getElementById('sticker-qr-code');
-      qrContainer.innerHTML = ""; 
-      new QRCode(qrContainer, { text: redirectUrl, width: 160, height: 160, colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
-
-      document.getElementById('sticker-preview-container').style.display = 'block';
-    }
-
-    function showToast(message, type) {
-      const toast = document.getElementById('toast');
-      const icon = document.getElementById('toast-icon');
-      
-      document.getElementById('toast-msg').innerText = message;
-      toast.style.background = type === "success" ? "#10b981" : "#ef4444";
-      icon.setAttribute('data-feather', type === "success" ? "check-circle" : "alert-circle");
-      feather.replace();
-
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3500);
-    }
-
-    function saveToLocalHistory(id, name) {
-      let history = JSON.parse(localStorage.getItem('qr_bind_history')) || [];
-      history.unshift({ id, name });
-      if (history.length > 5) history.pop(); // Keep only last 5
-      localStorage.setItem('qr_bind_history', JSON.stringify(history));
-    }
-
-    function renderRecentBinds() {
-      const listEl = document.getElementById('recent-list');
-      const history = JSON.parse(localStorage.getItem('qr_bind_history')) || [];
-      
-      if (history.length === 0) {
-        listEl.innerHTML = '<li class="recent-item" style="color:#94a3b8; justify-content:center;">No tags activated yet today.</li>';
-        return;
+      } catch (error) {
+        console.error(error);
+        listEl.innerHTML = '<p style="color:red;">Error loading data.</p>';
       }
-
-      listEl.innerHTML = history.map(item => `
-        <li class="recent-item">
-          <span class="recent-name">${item.name}</span>
-          <span class="recent-id">${item.id}</span>
-        </li>
-      `).join('');
     }
+
+    async function saveTag() {
+      const id = document.getElementById('f-qr-id').value.trim();
+      const name = document.getElementById('f-biz-name').value.trim();
+      const link = document.getElementById('f-google-link').value.trim();
+      const btn = document.getElementById('btn-save');
+
+      if (!id || !name || !link) { alert("Please fill all fields"); return; }
+
+      btn.innerText = "Saving...";
+      try {
+        await setDoc(doc(db, "qrcodes", id), {
+          status: "active",
+          businessName: name,
+          googleLink: link,
+          updatedAt: new Date()
+        }, { merge: true });
+
+        // Show the sticker immediately after saving
+        window.showSticker(id, name);
+        resetForm();
+        switchTab('manage');
+      } catch (err) {
+        console.error(err);
+        alert("Error saving data.");
+      } finally {
+        btn.innerHTML = '<i data-feather="save"></i> Save Configuration';
+        feather.replace();
+      }
+    }
+
+    // Expose to Window for inline onclick handlers
+    window.editTag = (id, name, link) => {
+      document.getElementById('form-title').innerText = "Edit Configuration: " + id;
+      document.getElementById('f-qr-id').value = id;
+      document.getElementById('f-qr-id').disabled = true; // Prevent changing the Document ID
+      document.getElementById('f-biz-name').value = name;
+      document.getElementById('f-google-link').value = link;
+      switchTab('bind');
+    };
+
+    window.deleteTag = async (id, name) => {
+      if(confirm(`Are you sure you want to permanently delete the QR Tag for "${name}" (ID: ${id})? The physical QR code will stop working.`)) {
+        try {
+          await deleteDoc(doc(db, "qrcodes", id));
+          fetchAndRenderTags();
+        } catch (error) {
+          alert("Error deleting document.");
+        }
+      }
+    };
+
+    /* =========================================
+       3. DESIGNER STICKER GENERATOR
+    ========================================= */
+    window.showSticker = (qrId, bizName) => {
+      document.getElementById('s-biz-name').innerText = bizName;
+      
+      const qrContainer = document.getElementById('s-qr-code');
+      qrContainer.innerHTML = ""; 
+      
+      const redirectUrl = window.location.origin + window.location.pathname + "?id=" + qrId;
+
+      new QRCode(qrContainer, { 
+        text: redirectUrl, 
+        width: 170, 
+        height: 170, 
+        colorDark: "#1e293b", 
+        colorLight: "#ffffff", 
+        correctLevel: QRCode.CorrectLevel.H 
+      });
+
+      document.getElementById('sticker-overlay').style.display = 'flex';
+      feather.replace();
+    };
+
+    window.closeSticker = () => {
+      document.getElementById('sticker-overlay').style.display = 'none';
+    };
+
   </script>
 </body>
 </html>
