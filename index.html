@@ -3,31 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Feasibility Media - Review Engine</title>
+  <title>Feasibility Media - Hub</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Reverted to the Rock-Solid QRCode.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- HTML5 Camera Scanner -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  <!-- Feather Icons -->
   <script src="https://unpkg.com/feather-icons"></script>
 
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --bg-color: #f8fafc;
-      --surface: #ffffff;
-      --surface-subtle: #f1f5f9;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --danger: #ef4444;
-      --success: #10b981;
+      --primary: #2563eb; --primary-dark: #1d4ed8;
+      --bg-color: #f8fafc; --surface: #ffffff; --surface-subtle: #f1f5f9;
+      --text-main: #0f172a; --text-muted: #64748b;
+      --border: #e2e8f0; --danger: #ef4444; --success: #10b981;
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
       --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.08);
       --shadow-lg: 0 12px 24px -4px rgba(0,0,0,0.12);
@@ -37,111 +28,74 @@
     body { background: var(--bg-color); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
     /* --- CONSUMER REDIRECT VIEW --- */
-    #consumer-view { display: none; text-align: center; margin: 15vh auto; max-width: 420px; background: white; padding: 40px 24px; border-radius: 24px; box-shadow: var(--shadow-lg); }
+    #consumer-view { display: none; text-align: center; margin: 10vh auto; max-width: 420px; background: white; padding: 40px 24px; border-radius: 24px; box-shadow: var(--shadow-lg); }
+    .consumer-logo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; display: none; border: 3px solid var(--surface-subtle); box-shadow: var(--shadow-md); }
     .pulse-ring { width: 72px; height: 72px; border-radius: 50%; background: rgba(37,99,235,0.1); margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; position: relative; }
     .pulse-ring::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid var(--primary); animation: pulse 1.5s linear infinite; opacity: 0; }
     @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.6; } 100% { transform: scale(1.3); opacity: 0; } }
 
-    /* --- ADAPTIVE ADMIN LAYOUT --- */
+    /* --- ADMIN DASHBOARD --- */
     #admin-view { display: none; width: 100%; max-width: 1300px; margin: 0 auto; padding: 24px; }
-    
-    .header-card {
-      background: var(--surface); border-radius: 20px; padding: 20px 28px;
-      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
-    }
+    .header-card { background: var(--surface); border-radius: 20px; padding: 20px 28px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .brand-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-    .device-pill { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 20px; background: var(--surface-subtle); color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
-
-    /* Nav Tabs */
+    
     .nav-tabs { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; }
-    .tab-btn {
-      padding: 12px 20px; background: white; border: 1px solid var(--border);
-      border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer;
-      color: var(--text-muted); transition: 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap;
-    }
+    .tab-btn { padding: 12px 20px; background: white; border: 1px solid var(--border); border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--text-muted); transition: 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
     .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
-
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
 
-    /* Grid & Cards */
     .card { background: var(--surface); border-radius: 20px; padding: 28px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 24px; }
     .grid-2col { display: grid; grid-template-columns: 1fr; gap: 24px; }
-
-    @media (min-width: 960px) {
-      .grid-2col { grid-template-columns: 1.1fr 0.9fr; }
-    }
+    @media (min-width: 960px) { .grid-2col { grid-template-columns: 1fr 1fr; } }
 
     /* Forms */
     .input-group { margin-bottom: 18px; }
     .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
-    .input-group input, .input-group select {
-      width: 100%; padding: 13px 16px; border: 1.5px solid var(--border);
-      border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; background: #fff;
-    }
+    .input-group input, .input-group select { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; background: #fff; }
     .input-group input:focus, .input-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
     .input-readonly { background: var(--surface-subtle) !important; color: var(--primary); font-weight: 600; font-family: monospace; }
+    
+    .helper-text { font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block; }
 
-    .btn {
-      background: var(--primary); color: white; border: none; padding: 14px 20px;
-      border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
-      transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
-    }
-    .btn:hover { background: var(--primary-dark); }
+    .file-upload-btn { display: flex; align-items: center; gap: 8px; justify-content: center; background: #f1f5f9; border: 1.5px dashed #cbd5e1; padding: 16px; border-radius: 12px; color: var(--text-muted); font-weight: 600; cursor: pointer; position: relative; overflow: hidden; }
+    .file-upload-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    #logo-preview { max-height: 60px; border-radius: 8px; margin-top: 10px; display: none; }
+
+    .btn { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+    .btn:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-dark { background: #0f172a; }
     .btn-dark:hover { background: #1e293b; }
     .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
-    .btn-outline:hover { background: var(--surface-subtle); }
 
     /* Camera Scanner */
     #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 2px solid var(--border); display: none; margin-bottom: 16px; }
 
     /* Bulk Minting Grid */
-    .bulk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; margin-top: 20px; }
-    .bulk-card {
-      background: white; border: 1.5px dashed var(--border); border-radius: 16px;
-      padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
-    }
+    .bulk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-top: 20px; }
+    .bulk-card { background: white; border: 1.5px dashed var(--border); border-radius: 16px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .bulk-id { font-family: monospace; font-weight: 700; font-size: 13px; }
-    .bulk-tag { font-size: 10px; padding: 3px 8px; border-radius: 10px; background: #eff6ff; color: var(--primary); font-weight: 600; }
 
-    /* Database List */
+    /* Lists */
     .data-list { display: grid; gap: 12px; }
-    .data-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 16px; background: var(--surface-subtle); border: 1px solid var(--border); border-radius: 14px;
-    }
+    .data-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--surface-subtle); border: 1px solid var(--border); border-radius: 14px; }
 
     /* Standee Canvas */
-    .standee-canvas {
-      width: 100%; max-width: 320px; aspect-ratio: 4 / 6;
-      background: white; border-radius: 16px; padding: 30px 20px;
-      margin: 0 auto 20px; box-shadow: var(--shadow-lg); border: 1px solid var(--border);
-      display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;
-    }
-    #standee-qr-container img { margin: 0 auto; } /* Fix for qrcode.js rendering */
+    .standee-canvas { width: 100%; max-width: 320px; aspect-ratio: 4 / 6; background: white; border-radius: 16px; padding: 30px 20px; margin: 0 auto 20px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; }
+    .standee-logo { max-height: 70px; max-width: 120px; object-fit: contain; margin-bottom: 10px; display: none; }
+    #standee-qr-container img { margin: 0 auto; }
 
     /* --- MOBILE DYNAMIC OVERRIDES --- */
     @media (max-width: 767px) {
       body { padding-bottom: 90px; }
       #admin-view { padding: 12px; }
-      .header-card { padding: 16px; border-radius: 16px; margin-bottom: 16px; }
-      .card { padding: 18px; border-radius: 16px; margin-bottom: 16px; }
-      
-      /* Fixed Bottom App Bar on Mobile */
-      .nav-tabs {
-        position: fixed; bottom: 0; left: 0; right: 0; margin-bottom: 0;
-        background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
-        padding: 10px 16px; border-top: 1px solid var(--border);
-        box-shadow: 0 -4px 12px rgba(0,0,0,0.05); z-index: 1000;
-        justify-content: space-around;
-      }
+      .header-card, .card { padding: 16px; border-radius: 16px; margin-bottom: 16px; }
+      .nav-tabs { position: fixed; bottom: 0; left: 0; right: 0; margin-bottom: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 10px 16px; border-top: 1px solid var(--border); box-shadow: 0 -4px 12px rgba(0,0,0,0.05); z-index: 1000; justify-content: space-around; }
       .tab-btn { padding: 8px 12px; font-size: 12px; border: none; background: transparent; flex-direction: column; gap: 4px; }
       .tab-btn.active { background: transparent; color: var(--primary); box-shadow: none; font-weight: 700; }
     }
 
-    /* --- PRINT STYLES --- */
     @media print {
       body * { visibility: hidden; }
       #print-area, #print-area * { visibility: visible; }
@@ -154,9 +108,10 @@
 
   <!-- 1. CONSUMER REDIRECT -->
   <div id="consumer-view">
-    <div class="pulse-ring"><i data-feather="external-link" style="color: var(--primary); width: 28px;"></i></div>
+    <img id="c-logo" class="consumer-logo" src="" alt="Logo">
+    <div class="pulse-ring" id="c-pulse"><i data-feather="external-link" style="color: var(--primary); width: 28px;"></i></div>
     <h1 style="font-size: 22px; font-weight:800; margin-bottom: 6px;" id="c-biz-name">Authenticating...</h1>
-    <p style="color: var(--text-muted); font-size: 14px;">Connecting directly to Google Reviews.</p>
+    <p style="color: var(--text-muted); font-size: 14px;" id="c-msg">Routing you to the review page...</p>
   </div>
 
   <!-- 2. ADMIN DASHBOARD -->
@@ -165,96 +120,120 @@
     <div class="header-card">
       <div>
         <h1 class="brand-title">Feasibility Media</h1>
-        <p style="color: var(--text-muted); font-size: 13px;">QR Review Distribution Engine</p>
-      </div>
-      <div class="device-pill" id="device-indicator">
-        <i data-feather="monitor" id="device-icon" style="width: 14px; height: 14px;"></i>
-        <span id="device-text">Desktop</span>
+        <p style="color: var(--text-muted); font-size: 13px;">Enterprise QR Hub</p>
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('tab-bind')">
-        <i data-feather="link"></i> <span>Scan & Bind</span>
-      </button>
-      <button class="tab-btn" onclick="switchTab('tab-bulk')">
-        <i data-feather="grid"></i> <span>Mint Bulk QRs</span>
-      </button>
-      <button class="tab-btn" onclick="switchTab('tab-preview')">
-        <i data-feather="printer"></i> <span>Standee Print</span>
-      </button>
-      <button class="tab-btn" onclick="switchTab('tab-manage')">
-        <i data-feather="database"></i> <span>Database</span>
-      </button>
+      <button class="tab-btn active" onclick="switchTab('tab-bind')"><i data-feather="link"></i> <span>Bind Standee</span></button>
+      <button class="tab-btn" onclick="switchTab('tab-clients')"><i data-feather="users"></i> <span>Clients & Logos</span></button>
+      <button class="tab-btn" onclick="switchTab('tab-bulk')"><i data-feather="grid"></i> <span>Mint QRs</span></button>
+      <button class="tab-btn" onclick="switchTab('tab-preview')"><i data-feather="printer"></i> <span>Print</span></button>
     </div>
 
-    <!-- TAB 1: SCAN & BIND -->
+    <!-- TAB 1: BIND STANDEE -->
     <div id="tab-bind" class="tab-pane active">
       <div class="grid-2col">
         <div class="card">
-          <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">1. Standee QR Input</h2>
+          <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">1. Scan Physical Standee</h2>
           <div id="reader"></div>
-          <button id="btn-camera" class="btn btn-dark" style="margin-bottom: 16px;">
-            <i data-feather="camera"></i> Open Mobile Camera
-          </button>
-          
+          <button id="btn-camera" class="btn btn-dark" style="margin-bottom: 16px;"><i data-feather="camera"></i> Open Camera</button>
           <div class="input-group">
-            <label>Scanned / Assigned QR ID</label>
-            <input type="text" id="f-qr-id" placeholder="e.g., FM-A8X92" class="input-readonly">
+            <label>Scanned QR ID</label>
+            <input type="text" id="b-qr-id" placeholder="e.g., FM-A8X92" class="input-readonly">
           </div>
         </div>
 
         <div class="card">
-          <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">2. Client Information</h2>
+          <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">2. Assign to Client</h2>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">You can assign unlimited QR codes to a single client profile.</p>
+          
           <div class="input-group">
-            <label>Business / Client Name</label>
-            <input type="text" id="f-biz-name" placeholder="e.g., Vidya Kendra Ranchi">
-          </div>
-          <div class="input-group">
-            <label>Paste Google Maps Link</label>
-            <input type="url" id="f-maps-link" placeholder="Paste link from Google Maps..." oninput="autoGenerateReviewLink()">
-          </div>
-          <div class="input-group">
-            <label>Auto-Extracted Direct Link</label>
-            <input type="text" id="f-direct-link" class="input-readonly" readonly placeholder="Calculates automatically...">
+            <label>Select Existing Client</label>
+            <select id="b-client-select">
+              <option value="" disabled selected>Loading clients...</option>
+            </select>
           </div>
           
-          <button id="btn-bind-save" class="btn">
-            <i data-feather="check-circle"></i> Activate & Bind Tag
-          </button>
+          <button id="btn-bind-save" class="btn"><i data-feather="check-circle"></i> Activate & Bind to Client</button>
+          
+          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border); text-align: center;">
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">Client not in the list?</p>
+            <button class="btn btn-outline" onclick="switchTab('tab-clients')">Create New Client Profile First</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: BULK MINTING -->
+    <!-- TAB 2: CLIENT PROFILES -->
+    <div id="tab-clients" class="tab-pane">
+      <div class="grid-2col">
+        <div class="card">
+          <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">Create / Edit Client Profile</h2>
+          
+          <div class="input-group">
+            <label>Business Name</label>
+            <input type="text" id="c-name" placeholder="e.g., Vidya Kendra Ranchi">
+          </div>
+
+          <div class="input-group">
+            <label>Google Direct Review Link <span style="color:red;">*</span></label>
+            <input type="url" id="c-link" placeholder="Paste link..." oninput="parseLink()">
+            <span class="helper-text">To guarantee the 5-star pop-up opens automatically, paste the "Ask for reviews" shortlink from your Google Business Profile (e.g., g.page/r/...) OR use the exact Place ID URL.</span>
+          </div>
+
+          <div class="input-group">
+            <label>Auto-Formatted URL (Checks for pop-up compatibility)</label>
+            <input type="text" id="c-direct-link" class="input-readonly" readonly placeholder="Auto-formats here...">
+          </div>
+
+          <div class="input-group">
+            <label>Client Logo (Optional)</label>
+            <div class="file-upload-btn">
+              <i data-feather="upload-cloud"></i> <span id="c-file-name">Tap to select image</span>
+              <input type="file" id="c-logo" accept="image/*" onchange="previewLogo(this)">
+            </div>
+            <img id="logo-preview" src="">
+          </div>
+
+          <button id="btn-save-client" class="btn"><i data-feather="save"></i> Save Client Profile</button>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">Active Clients</h2>
+          <div class="data-list" id="client-list-ui"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: BULK MINTING -->
     <div id="tab-bulk" class="tab-pane">
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
           <div>
             <h2 style="font-size: 16px; font-weight:700;">Bulk Mint Physical QR Codes</h2>
-            <p style="color: var(--text-muted); font-size: 13px;">Generate unassigned QR codes for your acrylic printer order.</p>
+            <p style="color: var(--text-muted); font-size: 13px;">Generate unassigned QR codes for your printer.</p>
           </div>
-          <div style="display: flex; gap: 10px; width: 100%; max-width: 320px;">
+          <div style="display: flex; gap: 10px;">
             <input type="number" id="bulk-qty" value="6" min="1" max="30" style="padding: 10px; border-radius: 10px; border: 1.5px solid var(--border); width: 80px; text-align: center; font-weight: 700;">
-            <button id="btn-mint" class="btn" style="flex: 1;"><i data-feather="cpu"></i> Mint</button>
+            <button id="btn-mint" class="btn"><i data-feather="cpu"></i> Mint</button>
           </div>
         </div>
-
-        <div id="print-area" class="bulk-grid">
-          <!-- Dynamic QRs Injected Safely Here -->
-        </div>
+        <div id="print-area" class="bulk-grid"></div>
       </div>
     </div>
 
-    <!-- TAB 3: STANDEE PREVIEW -->
+    <!-- TAB 4: STANDEE PREVIEW -->
     <div id="tab-preview" class="tab-pane">
       <div class="card" style="text-align: center;">
         <h2 style="font-size: 16px; margin-bottom: 20px; font-weight:700;">Standee 4x6 Preview</h2>
         
         <div class="standee-canvas">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" style="width: 100px; margin-bottom: 12px;" alt="Google">
-          <h2 id="p-biz-name" style="font-size: 20px; font-weight: 800; line-height: 1.2;">Select a Client</h2>
+          <div>
+            <img id="p-logo" class="standee-logo" src="">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" style="width: 100px; margin-bottom: 8px;" alt="Google">
+            <h2 id="p-biz-name" style="font-size: 20px; font-weight: 800; line-height: 1.2;">Select a Tag from Database</h2>
+          </div>
           
           <div style="background: white; padding: 14px; border-radius: 14px; border: 1px solid var(--border); margin: 12px 0;">
             <div id="standee-qr-container"></div>
@@ -265,50 +244,25 @@
             <p style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 4px; text-transform: uppercase;">Scan to review us</p>
           </div>
         </div>
-
-        <button onclick="window.print()" class="btn btn-dark" style="max-width: 320px;">
-          <i data-feather="printer"></i> Print Standee Insert
-        </button>
-      </div>
-    </div>
-
-    <!-- TAB 4: DATABASE -->
-    <div id="tab-manage" class="tab-pane">
-      <div class="card">
-        <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">Active Client Standees</h2>
-        <div class="data-list" id="client-list">
-          <p style="text-align: center; color: var(--text-muted);">Loading database records...</p>
-        </div>
+        <button onclick="window.print()" class="btn btn-dark" style="max-width: 320px;"><i data-feather="printer"></i> Print Standee Insert</button>
+        
+        <h3 style="font-size: 16px; margin-top: 30px; margin-bottom: 16px; font-weight:700;">Assigned Standees</h3>
+        <div class="data-list" id="assigned-qr-list"></div>
       </div>
     </div>
 
   </div>
 
   <script type="module">
-    import { db } from "./firebase-config.js";
+    import { db, storage } from "./firebase-config.js";
     import { doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
     feather.replace();
 
-    // 1. DYNAMIC DEVICE DETECTION
-    function checkDevice() {
-      const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
-      const icon = document.getElementById('device-icon');
-      const text = document.getElementById('device-text');
-      
-      if (isMobile) {
-        text.innerText = "Mobile";
-        icon.setAttribute('data-feather', 'smartphone');
-      } else {
-        text.innerText = "Desktop / Laptop";
-        icon.setAttribute('data-feather', 'monitor');
-      }
-      feather.replace();
-    }
-    window.addEventListener('resize', checkDevice);
-    checkDevice();
+    let allClients = {}; // Local cache of clients
 
-    // 2. ROUTER LOGIC
+    // 1. ROUTER LOGIC
     const urlParams = new URLSearchParams(window.location.search);
     const qrId = urlParams.get('id');
 
@@ -317,234 +271,293 @@
       initConsumerRedirect(qrId);
     } else {
       document.getElementById('admin-view').style.display = 'block';
-      fetchAndRenderTags();
+      loadClients();
+      loadAssignedQRs();
     }
 
+    window.switchTab = (tabId) => {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    };
+
+    // 2. CONSUMER REDIRECT LOGIC
     async function initConsumerRedirect(id) {
       try {
-        const docSnap = await getDoc(doc(db, "qrcodes", id));
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data.status === 'unassigned') {
-            document.getElementById('c-biz-name').innerText = "Unactivated Tag";
-          } else {
-            document.getElementById('c-biz-name').innerText = data.businessName;
-            setTimeout(() => { window.location.replace(data.directLink || data.googleLink); }, 1000);
+        const qrSnap = await getDoc(doc(db, "qrcodes", id));
+        if (qrSnap.exists()) {
+          const qrData = qrSnap.data();
+          if (qrData.status === 'unassigned') {
+            document.getElementById('c-biz-name').innerText = "Standee Not Activated";
+            document.getElementById('c-msg').innerText = "Please contact Feasibility Media to activate.";
+            document.getElementById('c-pulse').style.display = 'none';
+            return;
+          }
+
+          // Fetch associated Client
+          const clientSnap = await getDoc(doc(db, "clients", qrData.clientId));
+          if(clientSnap.exists()) {
+            const clientData = clientSnap.data();
+            document.getElementById('c-biz-name').innerText = clientData.name;
+            
+            if(clientData.logoUrl) {
+              document.getElementById('c-logo').src = clientData.logoUrl;
+              document.getElementById('c-logo').style.display = 'block';
+              document.getElementById('c-pulse').style.display = 'none'; // Hide generic pulse if logo exists
+            }
+
+            // Redirect magic
+            setTimeout(() => { window.location.replace(clientData.directLink); }, 1200);
           }
         } else {
-          document.getElementById('c-biz-name').innerText = "Invalid QR Tag";
+          document.getElementById('c-biz-name').innerText = "Invalid Tag";
         }
       } catch (e) {
         document.getElementById('c-biz-name').innerText = "Network Error";
       }
     }
 
-    // 3. TABS SWITCHER
-    window.switchTab = (tabId) => {
-      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      
-      document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+    // 3. CLIENT MANAGEMENT LOGIC
+    window.previewLogo = (input) => {
+      if (input.files && input.files[0]) {
+        document.getElementById('c-file-name').innerText = input.files[0].name;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById('logo-preview').src = e.target.result;
+          document.getElementById('logo-preview').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
     };
 
-    // 4. GOOGLE LINK PARSER ENGINE
-    window.autoGenerateReviewLink = () => {
-      const input = document.getElementById('f-maps-link').value.trim();
-      const output = document.getElementById('f-direct-link');
+    window.parseLink = () => {
+      const input = document.getElementById('c-link').value.trim();
+      const output = document.getElementById('c-direct-link');
       if (!input) { output.value = ""; return; }
-
-      const hexMatch = input.match(/!1s0x[0-9a-fA-F]+:0x([0-9a-fA-F]+)/);
-      if (hexMatch && hexMatch[1]) {
-        try {
-          const cid = BigInt('0x' + hexMatch[1]).toString(10);
-          output.value = `https://search.google.com/local/writereview?addreview&cid=${cid}`;
-          return;
-        } catch(e) {}
-      }
       
+      // Auto-extract Place ID if it's a standard map link
       const placeIdMatch = input.match(/place_id=([^&]+)/);
       if (placeIdMatch && placeIdMatch[1]) {
         output.value = `https://search.google.com/local/writereview?placeid=${placeIdMatch[1]}`;
         return;
       }
-
+      // Otherwise, trust the input (e.g., g.page shortlinks)
       output.value = input;
     };
 
-    // 5. BULK MINTING WITH SAFE DOM RENDERING
+    document.getElementById('btn-save-client').addEventListener('click', async () => {
+      const name = document.getElementById('c-name').value.trim();
+      const directLink = document.getElementById('c-direct-link').value.trim() || document.getElementById('c-link').value.trim();
+      const logoFile = document.getElementById('c-logo').files[0];
+      const btn = document.getElementById('btn-save-client');
+
+      if (!name || !directLink) { alert("Name and Link are required."); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = 'Saving...';
+      const clientId = `client_${Date.now()}`;
+      let logoUrl = "";
+
+      try {
+        if (logoFile) {
+          btn.innerHTML = 'Uploading Logo...';
+          const storageRef = ref(storage, `logos/${clientId}_${logoFile.name}`);
+          await uploadBytes(storageRef, logoFile);
+          logoUrl = await getDownloadURL(storageRef);
+        }
+
+        await setDoc(doc(db, "clients", clientId), {
+          name: name,
+          directLink: directLink,
+          logoUrl: logoUrl,
+          createdAt: new Date()
+        });
+
+        alert("Client Created!");
+        document.getElementById('c-name').value = '';
+        document.getElementById('c-link').value = '';
+        document.getElementById('c-direct-link').value = '';
+        document.getElementById('c-file-name').innerText = 'Tap to select image';
+        document.getElementById('logo-preview').style.display = 'none';
+        
+        loadClients(); // Refresh lists
+      } catch (e) {
+        console.error(e);
+        alert("Error saving client. Did you enable Firebase Storage rules?");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-feather="save"></i> Save Client Profile';
+        feather.replace();
+      }
+    });
+
+    async function loadClients() {
+      const uiList = document.getElementById('client-list-ui');
+      const selectBox = document.getElementById('b-client-select');
+      
+      try {
+        const snap = await getDocs(collection(db, "clients"));
+        uiList.innerHTML = '';
+        selectBox.innerHTML = '<option value="" disabled selected>-- Select a Client --</option>';
+        allClients = {};
+
+        if(snap.empty) {
+          uiList.innerHTML = '<p style="text-align:center; color:var(--text-muted);">No clients found.</p>';
+          return;
+        }
+
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          allClients[docSnap.id] = data;
+
+          // Populate Select Box
+          const opt = document.createElement('option');
+          opt.value = docSnap.id;
+          opt.innerText = data.name;
+          selectBox.appendChild(opt);
+
+          // Populate UI List
+          const item = document.createElement('div');
+          item.className = 'data-item';
+          item.innerHTML = `
+            <div style="display:flex; align-items:center; gap:12px;">
+              ${data.logoUrl ? `<img src="${data.logoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">` : `<div style="width:40px; height:40px; border-radius:50%; background:var(--border);"></div>`}
+              <div>
+                <h4 style="font-size: 15px; font-weight:700;">${data.name}</h4>
+                <p style="font-size: 11px; color: var(--primary); max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${data.directLink}</p>
+              </div>
+            </div>
+            <button class="btn btn-outline" style="padding: 6px 10px; width: auto; color: var(--danger); border-color: var(--danger);" onclick="deleteClient('${docSnap.id}')">Delete</button>
+          `;
+          uiList.appendChild(item);
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    window.deleteClient = async (id) => {
+      if (confirm(`Delete this client? Any bound QR codes will break.`)) {
+        await deleteDoc(doc(db, "clients", id));
+        loadClients();
+      }
+    };
+
+    // 4. BINDING QR TO CLIENT
+    document.getElementById('btn-bind-save').addEventListener('click', async () => {
+      const qrId = document.getElementById('b-qr-id').value.trim();
+      const clientId = document.getElementById('b-client-select').value;
+      const btn = document.getElementById('btn-bind-save');
+
+      if (!qrId || !clientId) { alert("Please provide a QR ID and select a client."); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = 'Binding...';
+      
+      try {
+        await setDoc(doc(db, "qrcodes", qrId), {
+          status: "active",
+          clientId: clientId,
+          updatedAt: new Date()
+        }, { merge: true });
+
+        alert(`✅ QR Code securely bound to ${allClients[clientId].name}!`);
+        document.getElementById('b-qr-id').value = '';
+        loadAssignedQRs();
+      } catch (e) {
+        console.error(e);
+        alert("Database error.");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-feather="check-circle"></i> Activate & Bind to Client';
+        feather.replace();
+      }
+    });
+
+    // 5. BULK MINTING
     document.getElementById('btn-mint').addEventListener('click', async () => {
       const qty = parseInt(document.getElementById('bulk-qty').value) || 1;
       const printArea = document.getElementById('print-area');
       const btn = document.getElementById('btn-mint');
-
+      
       printArea.innerHTML = '';
       btn.disabled = true;
       btn.innerHTML = 'Minting...';
 
       try {
         for (let i = 0; i < qty; i++) {
-          const uniqueStr = Math.random().toString(36).substring(2, 7).toUpperCase();
-          const newId = `FM-${uniqueStr}`;
+          const newId = `FM-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
           const redirectUrl = `${window.location.origin}${window.location.pathname}?id=${newId}`;
 
-          await setDoc(doc(db, "qrcodes", newId), {
-            status: "unassigned",
-            createdAt: new Date()
-          });
+          await setDoc(doc(db, "qrcodes", newId), { status: "unassigned", createdAt: new Date() });
 
-          // Build Card using explicit DOM construction
           const card = document.createElement('div');
           card.className = 'bulk-card';
+          
+          const qrDiv = document.createElement('div');
+          new QRCode(qrDiv, { text: redirectUrl, width: 120, height: 120 });
 
-          const qrContainer = document.createElement('div');
-          // Using the rock-solid QRCode.js here
-          new QRCode(qrContainer, {
-            text: redirectUrl,
-            width: 120,
-            height: 120,
-            colorDark: "#0f172a",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-          });
-
-          const idText = document.createElement('div');
-          idText.className = 'bulk-id';
-          idText.innerText = newId;
-
-          const tag = document.createElement('div');
-          tag.className = 'bulk-tag';
-          tag.innerText = 'Unassigned';
-
-          card.appendChild(qrContainer);
-          card.appendChild(idText);
-          card.appendChild(tag);
+          card.appendChild(qrDiv);
+          card.innerHTML += `<div class="bulk-id">${newId}</div><div class="bulk-tag">Unassigned</div>`;
           printArea.appendChild(card);
         }
-      } catch (err) {
-        console.error("QR Minting error:", err);
-        alert("Firestore permissions error. Please check your Firebase Rules.");
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i data-feather="cpu"></i> Mint';
-        feather.replace();
-      }
+      } catch (e) { alert("Error minting."); }
+      finally { btn.disabled = false; btn.innerHTML = '<i data-feather="cpu"></i> Mint'; feather.replace(); }
     });
 
     // 6. CAMERA SCANNER
-    let scannerInstance = null;
+    let scanner = null;
     document.getElementById('btn-camera').addEventListener('click', () => {
       const reader = document.getElementById('reader');
       reader.style.display = 'block';
-
-      if (!scannerInstance) {
-        scannerInstance = new Html5Qrcode("reader");
-      }
-
-      scannerInstance.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 220, height: 220 } },
-        (text) => {
-          try {
-            const url = new URL(text);
-            const id = url.searchParams.get('id');
-            document.getElementById('f-qr-id').value = id || text;
-          } catch(e) {
-            document.getElementById('f-qr-id').value = text;
-          }
-          scannerInstance.stop();
-          reader.style.display = 'none';
-        },
-        () => {}
-      ).catch(() => alert("Camera permission required."));
+      if (!scanner) scanner = new Html5Qrcode("reader");
+      
+      scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 220, height: 220 } }, (text) => {
+        try { document.getElementById('b-qr-id').value = new URL(text).searchParams.get('id') || text; } 
+        catch(e) { document.getElementById('b-qr-id').value = text; }
+        scanner.stop(); reader.style.display = 'none';
+      }, () => {}).catch(() => alert("Camera permission required."));
     });
 
-    // 7. BINDING HANDLER
-    document.getElementById('btn-bind-save').addEventListener('click', async () => {
-      const id = document.getElementById('f-qr-id').value.trim();
-      const name = document.getElementById('f-biz-name').value.trim();
-      const link = document.getElementById('f-direct-link').value.trim();
-
-      if (!id || !name || !link) {
-        alert("Please provide QR ID, Business Name, and a valid Google Link.");
-        return;
-      }
-
-      try {
-        await setDoc(doc(db, "qrcodes", id), {
-          status: "active",
-          businessName: name,
-          directLink: link,
-          updatedAt: new Date()
-        }, { merge: true });
-
-        alert(`✅ ${name} successfully bound to ${id}`);
-        document.getElementById('f-qr-id').value = '';
-        fetchAndRenderTags();
-      } catch (e) {
-        console.error(e);
-        alert("Database error while binding.");
-      }
-    });
-
-    // 8. DATABASE RENDER
-    async function fetchAndRenderTags() {
-      const list = document.getElementById('client-list');
+    // 7. LOAD & PREVIEW ASSIGNED QRS
+    async function loadAssignedQRs() {
+      const list = document.getElementById('assigned-qr-list');
       try {
         const snap = await getDocs(collection(db, "qrcodes"));
         list.innerHTML = '';
 
         snap.forEach((docSnap) => {
           const data = docSnap.data();
-          if (data.status === 'active') {
+          if (data.status === 'active' && allClients[data.clientId]) {
+            const clientName = allClients[data.clientId].name;
             const item = document.createElement('div');
             item.className = 'data-item';
             item.innerHTML = `
               <div>
-                <h4 style="font-size: 15px; font-weight:700;">${data.businessName}</h4>
-                <p style="font-size: 12px; color: var(--text-muted); font-family: monospace;">${docSnap.id}</p>
+                <h4 style="font-size: 15px; font-weight:700;">${clientName}</h4>
+                <p style="font-size: 12px; color: var(--text-muted); font-family: monospace;">Tag: ${docSnap.id}</p>
               </div>
-              <div style="display: flex; gap: 8px;">
-                <button class="btn btn-outline" style="padding: 8px 12px; width: auto;" onclick="renderPreview('${docSnap.id}', '${data.businessName}')">Preview</button>
-                <button class="btn" style="padding: 8px 12px; background: #fee2e2; color: #ef4444; width: auto;" onclick="deleteTag('${docSnap.id}')">Delete</button>
-              </div>
+              <button class="btn btn-outline" style="padding: 6px 12px; width: auto;" onclick="renderPreview('${docSnap.id}', '${data.clientId}')">View Standee</button>
             `;
             list.appendChild(item);
           }
         });
-
-        if (!list.children.length) {
-          list.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No active QR codes linked yet.</p>';
-        }
-      } catch (e) {
-        console.error(e);
-      }
+      } catch(e) {}
     }
 
-    window.renderPreview = (id, name) => {
-      document.getElementById('p-biz-name').innerText = name;
-      const qrContainer = document.getElementById('standee-qr-container');
-      qrContainer.innerHTML = ''; // Clear previous
+    window.renderPreview = (qrId, clientId) => {
+      const client = allClients[clientId];
+      document.getElementById('p-biz-name').innerText = client.name;
       
-      const redirectUrl = `${window.location.origin}${window.location.pathname}?id=${id}`;
-      
-      new QRCode(qrContainer, {
-        text: redirectUrl,
-        width: 140,
-        height: 140,
-        colorDark: "#0f172a",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
-      
-      switchTab('tab-preview');
-    };
+      const logoEl = document.getElementById('p-logo');
+      if(client.logoUrl) { logoEl.src = client.logoUrl; logoEl.style.display = 'block'; } 
+      else { logoEl.style.display = 'none'; }
 
-    window.deleteTag = async (id) => {
-      if (confirm(`Revoke tag ${id}?`)) {
-        await deleteDoc(doc(db, "qrcodes", id));
-        fetchAndRenderTags();
-      }
+      const qrContainer = document.getElementById('standee-qr-container');
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: `${window.location.origin}${window.location.pathname}?id=${qrId}`,
+        width: 140, height: 140, colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+      });
     };
   </script>
 </body>
