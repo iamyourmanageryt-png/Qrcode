@@ -27,6 +27,10 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: var(--bg-color); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
+    #fallback-ui { text-align: center; margin-top: 20vh; padding: 20px; }
+    #fallback-ui h2 { color: var(--danger); margin-bottom: 10px; font-weight: 800; font-size: 24px;}
+    #fallback-ui p { color: var(--text-muted); max-width: 500px; margin: 0 auto; line-height: 1.6; font-size: 15px;}
+
     #consumer-view { display: none; text-align: center; margin: 10vh auto; max-width: 420px; background: white; padding: 40px 24px; border-radius: 24px; box-shadow: var(--shadow-lg); }
     .consumer-logo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; display: none; border: 3px solid var(--surface-subtle); box-shadow: var(--shadow-md); }
     .pulse-ring { width: 72px; height: 72px; border-radius: 50%; background: rgba(37,99,235,0.1); margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; position: relative; }
@@ -52,12 +56,7 @@
     .input-group input, .input-group select { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; background: #fff; }
     .input-group input:focus, .input-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
     .input-readonly { background: var(--surface-subtle) !important; color: var(--primary); font-weight: 600; font-family: monospace; }
-    
     .helper-text { font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block; }
-
-    .file-upload-btn { display: flex; align-items: center; gap: 8px; justify-content: center; background: #f1f5f9; border: 1.5px dashed #cbd5e1; padding: 16px; border-radius: 12px; color: var(--text-muted); font-weight: 600; cursor: pointer; position: relative; overflow: hidden; }
-    .file-upload-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-    #logo-preview { max-height: 60px; border-radius: 8px; margin-top: 10px; display: none; }
 
     .btn { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
     .btn:hover:not(:disabled) { background: var(--primary-dark); }
@@ -96,6 +95,12 @@
   </style>
 </head>
 <body>
+
+  <div id="fallback-ui">
+    <h2>⚠️ JavaScript Blocked</h2>
+    <p>You opened this file directly from your computer (file://). Browsers block Firebase when opened this way for security reasons.</p>
+    <p style="margin-top: 15px; font-weight: 600;">How to fix: Use "Live Server" in VS Code, or upload this to a web host.</p>
+  </div>
 
   <div id="consumer-view">
     <img id="c-logo" class="consumer-logo" src="" alt="Logo">
@@ -166,15 +171,16 @@
             <label>Auto-Formatted URL</label>
             <input type="text" id="c-direct-link" class="input-readonly" readonly placeholder="Auto-formats here...">
           </div>
+          
+          <!-- BUG FIX: Replaced file uploader with a bulletproof Image URL input -->
           <div class="input-group">
-            <label>Client Logo (Optional)</label>
-            <div class="file-upload-btn">
-              <i data-feather="upload-cloud"></i> <span id="c-file-name">Tap to select image</span>
-              <input type="file" id="c-logo" accept="image/*" onchange="previewLogo(this)">
-            </div>
-            <img id="logo-preview" src="">
+            <label>Client Logo Image URL (Optional)</label>
+            <input type="url" id="c-logo-url" placeholder="https://example.com/logo.png" oninput="previewLogoUrl()">
+            <span class="helper-text">Right-click a logo online and select "Copy Image Address", then paste it here.</span>
           </div>
-          <button id="btn-save-client" class="btn"><i data-feather="save"></i> Save Client Profile</button>
+          <img id="logo-preview" src="" style="max-height: 60px; border-radius: 8px; margin-top: 10px; display: none;">
+
+          <button id="btn-save-client" class="btn" style="margin-top: 10px;"><i data-feather="save"></i> Save Client Profile</button>
         </div>
         <div class="card">
           <h2 style="font-size: 16px; margin-bottom: 16px; font-weight:700;">Active Clients</h2>
@@ -224,9 +230,10 @@
   </div>
 
   <script type="module">
-    import { db, storage } from "./firebase-config.js";
+    import { db } from "./firebase-config.js";
     import { doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+    document.getElementById('fallback-ui').style.display = 'none';
 
     feather.replace();
     let allClients = {}; 
@@ -280,15 +287,15 @@
       }
     }
 
-    window.previewLogo = (input) => {
-      if (input.files && input.files[0]) {
-        document.getElementById('c-file-name').innerText = input.files[0].name;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          document.getElementById('logo-preview').src = e.target.result;
-          document.getElementById('logo-preview').style.display = 'block';
-        };
-        reader.readAsDataURL(input.files[0]);
+    // BUG FIX: Preview image directly from URL instead of file upload
+    window.previewLogoUrl = () => {
+      const url = document.getElementById('c-logo-url').value.trim();
+      const preview = document.getElementById('logo-preview');
+      if (url) {
+        preview.src = url;
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
       }
     };
 
@@ -307,7 +314,7 @@
     document.getElementById('btn-save-client').addEventListener('click', async () => {
       const name = document.getElementById('c-name').value.trim();
       const directLink = document.getElementById('c-direct-link').value.trim() || document.getElementById('c-link').value.trim();
-      const logoFile = document.getElementById('c-logo').files[0];
+      const logoUrl = document.getElementById('c-logo-url').value.trim();
       const btn = document.getElementById('btn-save-client');
 
       if (!name || !directLink) { alert("Name and Link are required."); return; }
@@ -315,26 +322,26 @@
       btn.disabled = true;
       btn.innerHTML = 'Saving...';
       const clientId = `client_${Date.now()}`;
-      let logoUrl = "";
 
       try {
-        if (logoFile) {
-          btn.innerHTML = 'Uploading Logo...';
-          const storageRef = ref(storage, `logos/${clientId}_${logoFile.name}`);
-          await uploadBytes(storageRef, logoFile);
-          logoUrl = await getDownloadURL(storageRef);
-        }
-        await setDoc(doc(db, "clients", clientId), { name: name, directLink: directLink, logoUrl: logoUrl, createdAt: new Date() });
+        await setDoc(doc(db, "clients", clientId), { 
+          name: name, 
+          directLink: directLink, 
+          logoUrl: logoUrl, // Using the direct URL string 
+          createdAt: new Date() 
+        });
+        
         alert("Client Created!");
         document.getElementById('c-name').value = '';
         document.getElementById('c-link').value = '';
         document.getElementById('c-direct-link').value = '';
-        document.getElementById('c-file-name').innerText = 'Tap to select image';
+        document.getElementById('c-logo-url').value = '';
         document.getElementById('logo-preview').style.display = 'none';
+        
         loadClients(); 
       } catch (e) {
         console.error(e);
-        alert("Error saving client. Ensure your Firebase Storage Rules allow writes.");
+        alert("Database error while creating client.");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i data-feather="save"></i> Save Client Profile';
@@ -499,7 +506,7 @@
     }
 
     window.renderPreview = (qrId, clientId) => {
-      switchTab('tab-preview'); // Important: Switch tab before generating the QR code so the container is visible
+      switchTab('tab-preview'); 
       
       setTimeout(() => {
         const client = allClients[clientId];
@@ -510,13 +517,13 @@
         else { logoEl.style.display = 'none'; }
 
         const qrContainer = document.getElementById('standee-qr-container');
-        qrContainer.innerHTML = ''; // Safely clear only this container
+        qrContainer.innerHTML = ''; 
         
         new QRCode(qrContainer, {
           text: `${window.location.origin}${window.location.pathname}?id=${qrId}`,
           width: 140, height: 140, colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
         });
-      }, 50); // Minor delay ensures CSS display: block has taken effect
+      }, 50); 
     };
   </script>
 </body>
