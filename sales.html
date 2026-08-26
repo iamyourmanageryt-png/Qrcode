@@ -3,44 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sales Portal - Bind QR</title>
+  <title>Sales Portal - Bind & Generate QR</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Add a small style for the QR code container */
+    #qrcode-container {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      display: none; /* Hidden until generated */
+    }
+    #qrcode img { border: 8px solid white; border-radius: 8px; }
+  </style>
 </head>
 <body>
   <div class="app-container">
     <div class="header-text">
-      <h1>Activate QR Code</h1>
-      <p class="text-light">Link a physical QR to a Google Place</p>
+      <h1>Bind & Generate QR</h1>
+      <p class="text-light">Manually link a business to your platform</p>
     </div>
 
     <div class="input-group">
-      <label>QR Code ID (e.g. X9F2A)</label>
-      <input type="text" id="qr-id-input" placeholder="Enter printed ID">
-    </div>
-
-    <!-- NEW: Autocomplete Search Box -->
-    <div class="input-group">
-      <label>Search Business (Google Maps)</label>
-      <input type="text" id="autocomplete-input" placeholder="Type business name...">
-    </div>
-
-    <!-- Set to readonly so they are strictly populated by the API -->
-    <div class="input-group">
-      <label>Google Place ID</label>
-      <input type="text" id="place-id-input" placeholder="Auto-fills from search" readonly style="background: #f1f5f9; cursor: not-allowed;">
+      <label>QR Code ID (e.g., CAFE01)</label>
+      <input type="text" id="qr-id-input" placeholder="Enter a unique ID">
     </div>
     
     <div class="input-group">
       <label>Business Name</label>
-      <input type="text" id="biz-name-input" placeholder="Auto-fills from search" readonly style="background: #f1f5f9; cursor: not-allowed;">
+      <input type="text" id="biz-name-input" placeholder="e.g., Cafe Mocha">
     </div>
 
-    <button id="bind-btn" class="btn-primary">Bind QR Code</button>
+    <div class="input-group">
+      <label>Google Review/Maps Link</label>
+      <input type="text" id="google-link-input" placeholder="Paste link from Maps...">
+    </div>
+
+    <button id="bind-btn" class="btn-primary">Bind & Generate QR</button>
     <div id="status-msg" style="margin-top: 16px; text-align: center; font-weight: bold;"></div>
+
+    <!-- This is where the QR code graphic will appear -->
+    <div id="qrcode-container">
+      <h3 style="margin-bottom: 10px;">Scan to Test:</h3>
+      <div id="qrcode"></div>
+    </div>
   </div>
 
-  <!-- Google Places API Script (Replace YOUR_API_KEY) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places" defer></script>
+  <!-- Library to generate the visual QR code -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script type="module" src="sales.js"></script>
 </body>
 </html>
