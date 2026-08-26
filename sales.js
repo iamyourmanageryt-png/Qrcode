@@ -34,7 +34,7 @@ document.getElementById("bind-btn").addEventListener("click", async () => {
     // 2. Generate the visual QR Code
     // Make sure this matches where your index.html is hosted!
     // For testing locally, you can use something like: http://127.0.0.1:5500/?id=
-    const redirectUrl = `https://your-production-domain.com/?id=${qrId}`; 
+    const redirectUrl = `https://https://upviewcodes.vercel.app//?id=${qrId}`; 
     
     // Clear previous QR code if any
     qrDrawArea.innerHTML = ""; 
