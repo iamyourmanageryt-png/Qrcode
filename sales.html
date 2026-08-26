@@ -18,21 +18,29 @@
       <input type="text" id="qr-id-input" placeholder="Enter printed ID">
     </div>
 
+    <!-- NEW: Autocomplete Search Box -->
+    <div class="input-group">
+      <label>Search Business (Google Maps)</label>
+      <input type="text" id="autocomplete-input" placeholder="Type business name...">
+    </div>
+
+    <!-- Set to readonly so they are strictly populated by the API -->
     <div class="input-group">
       <label>Google Place ID</label>
-      <input type="text" id="place-id-input" placeholder="ChIJ...">
-      <small style="margin-top: 4px; color: #64748b;">(Google Places Autocomplete API will replace this input later)</small>
+      <input type="text" id="place-id-input" placeholder="Auto-fills from search" readonly style="background: #f1f5f9; cursor: not-allowed;">
     </div>
     
     <div class="input-group">
       <label>Business Name</label>
-      <input type="text" id="biz-name-input" placeholder="Cafe Mocha">
+      <input type="text" id="biz-name-input" placeholder="Auto-fills from search" readonly style="background: #f1f5f9; cursor: not-allowed;">
     </div>
 
     <button id="bind-btn" class="btn-primary">Bind QR Code</button>
     <div id="status-msg" style="margin-top: 16px; text-align: center; font-weight: bold;"></div>
   </div>
 
+  <!-- Google Places API Script (Replace YOUR_API_KEY) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places" defer></script>
   <script type="module" src="sales.js"></script>
 </body>
 </html>
