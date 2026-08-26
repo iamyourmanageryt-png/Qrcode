@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Portal - Bind QR</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="header-text">
+      <h1>Activate QR Code</h1>
+      <p class="text-light">Link a physical QR to a Google Place</p>
+    </div>
+
+    <div class="input-group">
+      <label>QR Code ID (e.g. X9F2A)</label>
+      <input type="text" id="qr-id-input" placeholder="Enter printed ID">
+    </div>
+
+    <div class="input-group">
+      <label>Google Place ID</label>
+      <input type="text" id="place-id-input" placeholder="ChIJ...">
+      <small style="margin-top: 4px; color: #64748b;">(Google Places Autocomplete API will replace this input later)</small>
+    </div>
+    
+    <div class="input-group">
+      <label>Business Name</label>
+      <input type="text" id="biz-name-input" placeholder="Cafe Mocha">
+    </div>
+
+    <button id="bind-btn" class="btn-primary">Bind QR Code</button>
+    <div id="status-msg" style="margin-top: 16px; text-align: center; font-weight: bold;"></div>
+  </div>
+
+  <script type="module" src="sales.js"></script>
+</body>
+</html>
